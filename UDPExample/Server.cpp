@@ -156,7 +156,7 @@ int main() {
 				}
 
 				size_t last_space_index = check_exit.find_last_of(' ');	
-				string last_word = check_exit.substr(last_space_index + 1);		
+				string last_word = check_exit.substr(last_space_index + 1);		 
 				int client_payment = stoi(last_word);	
 				
 				if(price > client_payment){
