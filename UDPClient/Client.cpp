@@ -27,18 +27,17 @@ DWORD WINAPI Sender(void* param)
 
     while (true) {
 
-        string query;
-        string payment;
-        string order;   
+        string query;   
+        string payment; 
+        string order;       
 
-        cout << endl;
-        cout << "Write your order: " << endl;     
-        getline(cin, query);   
+        cout << "Write your order: " << endl;        
+        getline(cin, query);      
         cout << "Make payment: ";
-        getline(cin, payment);
+        getline(cin, payment);  
 
         order = query + " " + payment; 
-        send(client_socket, order.c_str(), order.size(), 0);    
+        send(client_socket, order.c_str(), order.size(), 0);      
     }
 }
 
@@ -87,7 +86,7 @@ int main()
     // пытаться подключиться к адресу, пока не удастся
     for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
         // создать сокет на стороне клиента для подключения к серверу
-        client_socket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
+        client_socket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol); 
 
 
         if (client_socket == INVALID_SOCKET) {
