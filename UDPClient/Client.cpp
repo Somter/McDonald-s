@@ -30,8 +30,6 @@ DWORD WINAPI Sender(void* param)
         string query;   
         string payment; 
         string order;       
-
-        cout << "Write your order: " << endl;        
         getline(cin, query);      
         cout << "Make payment: ";
         getline(cin, payment);  
@@ -44,14 +42,15 @@ DWORD WINAPI Sender(void* param)
 DWORD WINAPI Receiver(void* param)  
 {
     HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE); 
-    cout << endl;   
+    cout << endl;
     while (true) {
         char response[DEFAULT_BUFLEN];
         int result = recv(client_socket, response, DEFAULT_BUFLEN, 0);  
         response[result] = '\0'; 
         cout << response << endl; 
-
+        cout << endl;   
     }
+    cout << endl;   
 }
 
 int main()

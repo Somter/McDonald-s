@@ -121,66 +121,68 @@ int main() {
 		for (int i = 0; i < MAX_CLIENTS; i++)
 		{
 			SOCKET s = client_socket[i];	
-			if (FD_ISSET(s, &readfds))
+			if (client_socket[i] != 0 && FD_ISSET(s, &readfds))	
 			{
 				getpeername(s, (sockaddr*)&address, (int*)&addrlen);
 				char client_message[DEFAULT_BUFLEN];	
 
 				int client_message_length = recv(s, client_message, DEFAULT_BUFLEN, 0);
+				if (client_message_length <= 0) {	
+					
+					cout << "Client #" << i << " is off." << endl;	
+					closesocket(s);	
+					client_socket[i] = 0;	
+					continue; 
+				}
 				client_message[client_message_length] = '\0';
 				string check_exit = client_message;	
-						
-				for (size_t j = 0; j < menu.size(); ++j) {		
-					if (check_exit.find(menu[j]) != -1) {		
-						if (menu[j] == "hamburger") {
-							time += 7000;	
-							time_for_str += 7;
-							price += 5;	
-						}
-						if (menu[j] == "nuggets") {
-							time += 5000;
-							time_for_str += 5;	
-							price += 3;	
-						}
-						if (menu[j] == "potato") {
-							time += 6000;	
-							time_for_str += 6;	
-							price += 3;		
-						}
-						if (menu[j] == "cola") {
-							time += 3000;
-							time_for_str += 3;	
-							price += 1;		
+				
+				if (client_socket[i] != 0) {
+					for (size_t j = 0; j < menu.size(); ++j) {
+						if (check_exit.find(menu[j]) != -1) {
+							if (menu[j] == "hamburger") {	
+								time += 7000;
+								time_for_str += 7;
+								price += 5;
+							}
+							if (menu[j] == "nuggets") {	
+								time += 5000;
+								time_for_str += 5;
+								price += 3;
+							}
+							if (menu[j] == "potato") {
+								time += 6000;
+								time_for_str += 6;
+								price += 3;
+							}
+							if (menu[j] == "cola") {	
+								time += 3000;
+								time_for_str += 3;
+								price += 1;
+							}
 						}
 					}
+
+					size_t last_space_index = check_exit.find_last_of(' ');
+					string last_word = check_exit.substr(last_space_index + 1);
+					int client_payment = stoi(last_word);
+
+					if (price > client_payment) {
+						int difference = price - client_payment;
+						string not_enough_to_pay = to_string(difference);
+						string erroror_messege = "You are missing $" + not_enough_to_pay + " to pay for your order";
+						send(client_socket[i], erroror_messege.c_str(), strlen(erroror_messege.c_str()) + 1, 0);
+					}
+					else {
+						string time_str = to_string(time_for_str);
+						string time_messege = "Your order will be ready in " + time_str + " seconds";
+						send(client_socket[i], time_messege.c_str(), strlen(time_messege.c_str()) + 1, 0);
+						Sleep(time);
+						send(client_socket[i], "Your order is ready! ", strlen("Your order is ready!") + 1, 0);
+
+					}
 				}
-
-				size_t last_space_index = check_exit.find_last_of(' ');	
-				string last_word = check_exit.substr(last_space_index + 1);			
-				int client_payment = stoi(last_word);	
 				
-				if(price > client_payment){
-					int difference = price - client_payment;	
-					string not_enough_to_pay = to_string(difference);	
-					string erroror_messege = "You are missing $" + not_enough_to_pay + " to pay for your order";		
-					send(client_socket[i], erroror_messege.c_str(), client_message_length, 0);	
-				}
-				else {	
-					string time_str = to_string(time_for_str);	
-					string time_messege = "Your order will be ready in " + time_str + " seconds";
-					send(client_socket[i], time_messege.c_str(), strlen(time_messege.c_str())+1, 0);	
-					Sleep(time);	
-					send(client_socket[i], "Your order is ready! ", strlen("Your order is ready!") + 1, 0);	
-					
-				}	
-
-				if (check_exit == "off")
-				{
-					cout << "Client #" << i << " is off\n";
-					client_socket[i] = 0;
-				}	
-				
-
 				string temp = client_message;
 				// temp += "\n";
 				history.push_back(temp);
